@@ -263,15 +263,16 @@ void homeaxis(const AxisEnum axis);
 #else // CARTESIAN
 
   inline bool position_is_reachable(const float &rx, const float &ry) {
-      // Add 0.001 margin to deal with float imprecision
-      return WITHIN(rx, X_MIN_POS - 0.001, X_MAX_POS + 0.001)
-          && WITHIN(ry, Y_MIN_POS - 0.001, Y_MAX_POS + 0.001);
+    // Add 0.001 margin to deal with float imprecision
+    return WITHIN(rx, X_MIN_POS - 0.001, X_MAX_POS + 0.001)
+        && WITHIN(ry, Y_MIN_POS - 0.001, Y_MAX_POS + 0.001);
   }
 
   inline bool position_is_reachable_by_probe(const float &rx, const float &ry) {
-      // Add 0.001 margin to deal with float imprecision
-      return WITHIN(rx, MIN_PROBE_X - 0.001, MAX_PROBE_X + 0.001)
-          && WITHIN(ry, MIN_PROBE_Y - 0.001, MAX_PROBE_Y + 0.001);
+    const float nx = rx - (X_PROBE_OFFSET_FROM_EXTRUDER), ny = ry - (Y_PROBE_OFFSET_FROM_EXTRUDER);
+    return position_is_reachable(rx, ry)
+        && WITHIN(nx, X_MIN_BED - 0.001, X_MAX_BED + 0.001)
+        && WITHIN(ny, Y_MIN_BED - 0.001, Y_MAX_BED + 0.001);
   }
 
 #endif // CARTESIAN
@@ -288,7 +289,7 @@ void homeaxis(const AxisEnum axis);
  */
 #if ENABLED(DUAL_X_CARRIAGE)
 
-  enum DualXMode {
+  enum DualXMode : char {
     DXC_FULL_CONTROL_MODE,  // DUAL_X_CARRIAGE only
     DXC_AUTO_PARK_MODE,     // DUAL_X_CARRIAGE only
     DXC_DUPLICATION_MODE
@@ -308,7 +309,7 @@ void homeaxis(const AxisEnum axis);
 
 #elif ENABLED(DUAL_NOZZLE_DUPLICATION_MODE)
 
-  enum DualXMode {
+  enum DualXMode : char {
     DXC_DUPLICATION_MODE = 2
   };
 
